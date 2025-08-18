@@ -30,7 +30,7 @@ namespace ritaripeli
 				Print.WriteColor("Tilanne: Osumapisteitä: ", ConsoleColor.White);
 				Print.WriteColor($"{pelaaja.Osumapisteet} op ", ConsoleColor.Green);
 				Print.WriteColor("Kultaa: ", ConsoleColor.White);
-				Print.LineColor($"{pelaaja.rahapussi.Rahoja} kr", ConsoleColor.Yellow);
+				Print.LineColor($"{pelaaja.Rahapussi.Rahoja} kr", ConsoleColor.Yellow);
 				// TODO anna pelaajan valita meneekö kauppaan vai taistelemaan vai käyttääkö tavaroita Repusta
 				string valinta = Console.ReadLine();
 
