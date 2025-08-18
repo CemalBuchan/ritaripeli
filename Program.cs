@@ -4,7 +4,6 @@
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Tervetuloa pelaamaan ritaripeliä");
             Ritaripeli peli = new Ritaripeli();
             peli.PeliSilmukka();
         }

@@ -9,12 +9,12 @@ namespace ritaripeli
 	internal class Ritaripeli
 	{
 		Ritari pelaaja;
-		List<Hirvio> hirviot;
+		List<Hirviö> hirviot;
 		List<IKauppa> kaupat;
 		public Ritaripeli()
 		{
 			pelaaja = new Ritari(aloitusOsumapisteet: 10, aloitusRahat: 10);
-			hirviot = new List<Hirvio>();
+			hirviot = new List<Hirviö>();
 			// TODO luo erilaiset hirviöt
 			kaupat = new List<IKauppa>();
 			// TODO luo erilaiset kaupat
@@ -22,11 +22,17 @@ namespace ritaripeli
 
 		public void PeliSilmukka()
 		{
+			Print.Line("Tervetuloa suureen seikkailuun!");
 			while (true)
 			{
-				// TODO näytä pelaajan tilanne
-				// TODO anna pelaajan valita meneekö kauppaan vai taistelemaan vai käyttääkö tavaroita Repusta
 
+				// TODO näytä pelaajan tilanne
+				Print.WriteColor("Tilanne: Osumapisteitä: ", ConsoleColor.White);
+				Print.WriteColor($"{pelaaja.Osumapisteet} op ", ConsoleColor.Green);
+				Print.WriteColor("Kultaa: ", ConsoleColor.White);
+				Print.LineColor($"{pelaaja.rahapussi.Rahoja} kr", ConsoleColor.Yellow);
+				// TODO anna pelaajan valita meneekö kauppaan vai taistelemaan vai käyttääkö tavaroita Repusta
+				string valinta = Console.ReadLine();
 
 
 
@@ -37,7 +43,7 @@ namespace ritaripeli
 		public void TaisteluTila()
 		{
 			// TODO arvo pelaajaa vastaan taisteleva hirviö
-			Hirvio vastustaja = null;
+			Hirviö vastustaja = null;
 			while (vastustaja.Osumapisteet > 0 && pelaaja.Osumapisteet > 0)
 			{
 				// TODO anna pelaajan valita toiminto:
