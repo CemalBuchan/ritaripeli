@@ -28,27 +28,64 @@ namespace ritaripeli
 			};
 		}
 
-		public void PeliSilmukka()
-		{
-			Print.Line("Tervetuloa suureen seikkailuun!");
-			while (true)
-			{
+        public void PeliSilmukka()
+        {
+            Print.Line("Tervetuloa suureen seikkailuun!");
 
-				// TODO näytä pelaajan tilanne
-				Print.WriteColor("Tilanne: Osumapisteitä: ", ConsoleColor.White);
-				Print.WriteColor($"{pelaaja.Osumapisteet} op ", ConsoleColor.Green);
-				Print.WriteColor("Kultaa: ", ConsoleColor.White);
-				Print.LineColor($"{pelaaja.Rahapussi.Rahoja} kr", ConsoleColor.Yellow);
-				// TODO anna pelaajan valita meneekö kauppaan vai taistelemaan vai käyttääkö tavaroita Repusta
-				string valinta = Console.ReadLine();
+            while (true)
+            {
+                // Pelaajan tilanne
+                Print.WriteColor("Tilanne: Osumapisteitä: ", ConsoleColor.White);
+                Print.WriteColor($"{pelaaja.Osumapisteet} op ", ConsoleColor.Green);
+                Print.WriteColor("Kultaa: ", ConsoleColor.White);
+                Print.LineColor($"{pelaaja.Rahapussi.Rahoja} kr", ConsoleColor.Yellow);
+
+                Print.Line("");
+                Print.Line("Mitä haluat tehdä?");
+                Print.Line("1 - Mene kauppaan");
+                Print.Line("2 - Taistele hirviötä vastaan");
+                Print.Line("3 - Käytä tavaraa repusta");
+                Print.Line("0 - Lopeta peli");
+
+                string valinta = Console.ReadLine();
+
+                switch (valinta)
+                {
+                    case "1":
+                        KauppaTila();
+                        break;
+
+                    case "2":
+                        TaisteluTila();
+                        break;
+
+                    case "3":
+                        KaytaTavaraa();
+                        break;
+
+                    case "0":
+                        Print.Line("Peli päättyi. Kiitos pelaamisesta!");
+                        return;
+
+                    default:
+                        Print.Line("Virheellinen valinta!");
+                        break;
+                }
+
+                // Pelin loppuehto: pelaaja kuolee
+                if (pelaaja.Osumapisteet <= 0)
+                {
+                    Print.LineColor("Olet kuollut. Peli loppui.", ConsoleColor.Red);
+                    return;
+                }
+            }
+        }
 
 
 
-				// Tarkista onko peli päättynyt
-			}
-		}
 
-		public void TaisteluTila()
+
+        public void TaisteluTila()
 		{
 			// TODO arvo pelaajaa vastaan taisteleva hirviö
 			Hirviö vastustaja = null;
@@ -70,10 +107,50 @@ namespace ritaripeli
 
 		public void KauppaTila()
 		{
-			// TODO anna pelaajan valita mihin kauppaan pelaaja menee
-			// listaa kaupan tavarat ja anna pelaajan valita minkä hän haluaa
-			// yrittää ostaa
-			// lisää vaihtoehto jolla pelaaja pääsee pois kaupasta ja Kauppatilasta
-		}
-	}
+            Print.Line("Valitse kauppa:");
+
+            for (int i = 0; i < kaupat.Count; i++)
+            {
+                Print.Line($"{i} - {kaupat[i].GetType().Name}");
+            }
+
+            if (!int.TryParse(Console.ReadLine(), out int valinta))
+                return;
+
+            if (valinta < 0 || valinta >= kaupat.Count)
+                return;
+
+            var kauppa = kaupat[valinta];
+            var tavarat = kauppa.ListaaTavarat();
+
+            Print.Line("Myynnissä olevat tavarat:");
+            for (int i = 0; i < tavarat.Count; i++)
+            {
+                Print.Line($"{i} - {tavarat[i].Esine.Name} ({tavarat[i].Hinta} kr)");
+            }
+
+            Print.Line("Valitse ostettava tavara:");
+            if (!int.TryParse(Console.ReadLine(), out int tavaraIndex))
+                return;
+
+            var ostettu = kauppa.OstaTavara(tavaraIndex, pelaaja.Rahapussi);
+
+            if (ostettu != null)
+            {
+                pelaaja.Reppu.addToBag(ostettu);
+                Print.LineColor("Osto onnistui!", ConsoleColor.Green);
+            }
+            else
+            {
+                Print.LineColor("Osto epäonnistui.", ConsoleColor.Red);
+            }
+        }
+
+        private void KaytaTavaraa()
+        {
+
+        }
+
+
+    }
 }
