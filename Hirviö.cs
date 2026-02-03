@@ -15,5 +15,13 @@ namespace ritaripeli
 		public string Nimi { get; set; }
 		public abstract int AnnaVahinko();
 		public abstract void OtaVahinkoa(int määrä);
-	}
+
+        public Hirviö(string ad, int osumapisteet)
+        {
+            Nimi = ad;
+            Osumapisteet = osumapisteet;
+        }
+
+
+    }
 }

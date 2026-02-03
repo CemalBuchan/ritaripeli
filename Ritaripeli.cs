@@ -14,9 +14,13 @@ namespace ritaripeli
 		public Ritaripeli()
 		{
 			pelaaja = new Ritari(aloitusOsumapisteet: 10, aloitusRahat: 10);
-			hirviot = new List<Hirviö>();
-			// TODO luo erilaiset hirviöt
-			kaupat = new List<IKauppa>();
+            hirviot = new List<Hirviö>();
+
+            hirviot.Add(new Goblin());
+            hirviot.Add(new Hamahakki());
+
+
+            kaupat = new List<IKauppa>();
 			// TODO luo erilaiset kaupat
 		}
 
