@@ -12,5 +12,16 @@ namespace ritaripeli
 	/// </summary>
 	internal abstract class Tavara
 	{
-	}
+        public string Name;
+        public float Weight;
+        public float Volume;
+
+        public Tavara(float weight, float volume, string name)
+        {
+            Weight = weight;
+            Volume = volume;
+            Name = name;
+        }
+
+    }
 }
