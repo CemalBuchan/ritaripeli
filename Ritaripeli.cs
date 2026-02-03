@@ -86,27 +86,117 @@ namespace ritaripeli
 
 
         public void TaisteluTila()
-		{
-			// TODO arvo pelaajaa vastaan taisteleva hirviö
-			Hirviö vastustaja = null;
-			while (vastustaja.Osumapisteet > 0 && pelaaja.Osumapisteet > 0)
-			{
-				// TODO anna pelaajan valita toiminto:
-				// 1. hyökkää : aiheuta vahinkoa hirviölle
-				// 2. käytä esinettä ; näytä Repun sisältö ja anna pelaajan valita tavara
-				// Jos pelaaja käyttää ruoka-annosta, lisää pelaajan osumapisteitä
-				// Jos pelaaja käyttää nuolta, ammu nuoli kohti vihollista
-				// Jos pelaaja käyttää jotain muuta tavaraa, toimi valinnan mukaan
-				// 3. pakene : poistu TaisteluTilasta
+        {
+            Random rnd = new Random();
+          
 
-				// TODO Jos hirviöllä on osumapisteitä jäljellä
-				// arvo hirviön tekemä vahinko ja vähennä se pelaajan osumapisteistä
-			}
-			// Kun taistelu loppuu, palaa PeliSilmukkaan
-		}
+            int hirvionumber = rnd.Next(hirviot.Count);
+            Hirviö vastustaja;
+            if (hirvionumber == 0)
+            {
+                 vastustaja = new Goblin();
+            }
+            else 
+            {
+                vastustaja = new Hamahakki();
+            }
+           
 
-		public void KauppaTila()
-		{
+
+            Print.LineColor($"Taistelu alkaa! Vastassasi on {vastustaja.Nimi}", ConsoleColor.Red);
+
+            while (vastustaja.Osumapisteet > 0 && pelaaja.Osumapisteet > 0)
+            {
+                Print.Line("");
+                Print.Line($"Sinä: {pelaaja.Osumapisteet} OP | Hirviö: {vastustaja.Osumapisteet} OP");
+                Print.Line("Valitse toiminto:");
+                Print.Line("1 - Hyökkää");
+                Print.Line("2 - Käytä esinettä");
+                Print.Line("3 - Pakene");
+
+                string valinta = Console.ReadLine();
+
+                if (valinta == "1")
+                {
+                    int vahinko = pelaaja.Hyokkaa();
+                    vastustaja.OtaVahinkoa(vahinko);
+                    Print.Line($"Iskit hirviötä ja aiheutit {vahinko} vahinkoa.");
+                }
+                else if (valinta == "2")
+                {
+                    var tavarat = pelaaja.Reppu.Tavarat;
+
+                    if (tavarat.Count == 0)
+                    {
+                        Print.Line("Reppu on tyhjä.");
+                        continue;
+                    }
+
+                    Print.Line("Valitse esine:");
+                    for (int i = 0; i < tavarat.Count; i++)
+                    {
+                        Print.Line($"{i} - {tavarat[i].Name}");
+                    }
+
+                    if (!int.TryParse(Console.ReadLine(), out int esineIndex))
+                        continue;
+
+                    if (esineIndex < 0 || esineIndex >= tavarat.Count)
+                        continue;
+
+                    Tavara valittu = tavarat[esineIndex];
+
+                    if (valittu is Food ruoka)
+                    {
+                        pelaaja.Paranna(ruoka.Health);
+                        pelaaja.Reppu.PoistaTavara(ruoka);
+                        Print.Line($"Söit ruokaa ja paranit {ruoka.Health} OP.");
+                    }
+                    else if (valittu is Nuoli nuoli)
+                    {
+                        vastustaja.OtaVahinkoa(nuoli.Vahinko);
+                        pelaaja.Reppu.PoistaTavara(nuoli);
+                        Print.Line($"Ammuit nuolen ja aiheutit {nuoli.Vahinko} vahinkoa.");
+                    }
+                    else
+                    {
+                        Print.Line("Tätä esinettä ei voi käyttää taistelussa.");
+                    }
+                }
+                else if (valinta == "3")
+                {
+                    Print.LineColor("Pakenit taistelusta!", ConsoleColor.Yellow);
+                    return; 
+                }
+                else
+                {
+                    Print.Line("Virheellinen valinta.");
+                    continue;
+                }
+
+                if (vastustaja.Osumapisteet > 0)
+                {
+                    int hirvionVahinko = vastustaja.AnnaVahinko();
+                    pelaaja.OtaVahinkoa(hirvionVahinko);
+                    Print.Line($"Hirviö iski sinua ({hirvionVahinko} vahinkoa).");
+                }
+            }
+
+            if (pelaaja.Osumapisteet > 0)
+            {
+                int palkinto = rnd.Next(3, 7);
+                pelaaja.Rahapussi.LisääRahaa(palkinto);
+                Print.LineColor($"Voitit taistelun! Sait {palkinto} kultaa.", ConsoleColor.Green);
+            }
+            else
+            {
+                Print.LineColor("Sinut kukistettiin taistelussa.", ConsoleColor.Red);
+            }
+        }
+
+
+        public void KauppaTila()
+        {
             Print.Line("Valitse kauppa:");
 
             for (int i = 0; i < kaupat.Count; i++)
@@ -114,13 +204,14 @@ namespace ritaripeli
                 Print.Line($"{i} - {kaupat[i].GetType().Name}");
             }
 
-            if (!int.TryParse(Console.ReadLine(), out int valinta))
+            if (!int.TryParse(Console.ReadLine(), out int kauppaIndex) ||
+                kauppaIndex < 0 || kauppaIndex >= kaupat.Count)
+            {
+                Print.LineColor("Virheellinen valinta.", ConsoleColor.Red);
                 return;
+            }
 
-            if (valinta < 0 || valinta >= kaupat.Count)
-                return;
-
-            var kauppa = kaupat[valinta];
+            var kauppa = kaupat[kauppaIndex];
             var tavarat = kauppa.ListaaTavarat();
 
             Print.Line("Myynnissä olevat tavarat:");
@@ -130,25 +221,68 @@ namespace ritaripeli
             }
 
             Print.Line("Valitse ostettava tavara:");
-            if (!int.TryParse(Console.ReadLine(), out int tavaraIndex))
+            if (!int.TryParse(Console.ReadLine(), out int tavaraIndex) ||
+                tavaraIndex < 0 || tavaraIndex >= tavarat.Count)
+            {
+                Print.LineColor("Virheellinen valinta.", ConsoleColor.Red);
                 return;
+            }
 
             var ostettu = kauppa.OstaTavara(tavaraIndex, pelaaja.Rahapussi);
 
             if (ostettu != null)
             {
-                pelaaja.Reppu.addToBag(ostettu);
-                Print.LineColor("Osto onnistui!", ConsoleColor.Green);
+                if (ostettu is Ase ase)
+                {
+                    pelaaja.AseGet(ase);
+                    pelaaja.Reppu.LisaaTavara(ase);
+                    Print.LineColor($"Osto onnistui! Kuusasit silhan: {ase.Name} ({ase.Vahinko} vahinkoa)", ConsoleColor.Green);
+                }
+                else
+                {
+                    bool added = pelaaja.Reppu.LisaaTavara(ostettu);
+                    if (added)
+                        Print.LineColor("Osto onnistui!", ConsoleColor.Green);
+                    else
+                        Print.LineColor("Tavaraa ei voitu lisätä reppuun.", ConsoleColor.Red);
+                }
             }
             else
             {
-                Print.LineColor("Osto epäonnistui.", ConsoleColor.Red);
+                Print.LineColor("Osto epäonnistui. Rahaa ei ehkä ollut tarpeeksi.", ConsoleColor.Red);
             }
         }
 
+
+
         private void KaytaTavaraa()
         {
+            var tavarat = pelaaja.Reppu.Tavarat;
 
+            if (tavarat.Count == 0)
+            {
+                Print.Line("Reppu on tyhjä.");
+                return;
+            }
+
+            Print.Line("Repun tavarat:");
+            for (int i = 0; i < tavarat.Count; i++)
+            {
+                Print.Line($"{i} - {tavarat[i].Name}");
+            }
+
+            if (!int.TryParse(Console.ReadLine(), out int valinta))
+                return;
+
+            if (valinta < 0 || valinta >= tavarat.Count)
+                return;
+
+            if (tavarat[valinta] is Food ruoka)
+            {
+                pelaaja.Paranna(ruoka.Health);
+                pelaaja.Reppu.PoistaTavara(ruoka);
+                Print.LineColor("Söit ruokaa ja paranit.", ConsoleColor.Green);
+            }
         }
 
 

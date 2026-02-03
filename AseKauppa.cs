@@ -10,8 +10,8 @@ namespace ritaripeli
     {
         private List<TavaraJaHinta> tavarat = new()
     {
-        new TavaraJaHinta(new Ase("Parempi miekka", 4, 3f, 1.2f), 6),
-        new TavaraJaHinta(new Ase("Sotakirves", 6, 4f, 1.5f), 9)
+        new TavaraJaHinta(new Ase("Parempi miekka", 3, 3f, 1.2f), 6),
+        new TavaraJaHinta(new Ase("Sotakirves", 4, 4f, 1.5f), 20)
     };
 
         public List<TavaraJaHinta> ListaaTavarat() => tavarat;

@@ -1,90 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ritaripeli;
 
-namespace ritaripeli
+internal class Reppu
 {
-    internal class Reppu
+    private List<Tavara> itemsInBag = new List<Tavara>();
+
+    public IReadOnlyList<Tavara> Tavarat => itemsInBag.AsReadOnly();
+
+    public float MaxItemsInBag { get; } = 10;
+    public float MaxWeight { get; } = 30;
+    public float MaxVolume { get; } = 20;
+
+    public float CurrentWeight { get; private set; } = 0;
+    public float CurrentVolume { get; private set; } = 0;
+
+    public float LeftWeight() => MaxWeight - CurrentWeight;
+    public float LeftVolume() => MaxVolume - CurrentVolume;
+    public float LeftCount() => MaxItemsInBag - itemsInBag.Count;
+
+    public bool LisaaTavara(Tavara item)
     {
-        public List<Tavara> itemsInBag = new List<Tavara>();
-
-        public float maxItemsInBag = 10;
-
-        public float maxWeight = 30;
-        public float currentWeight = 0;
-
-        public float maxVolume = 20;
-        public float currentVolume = 0;
-
-        public float leftWeight()
+        if (LeftCount() <= 0)
         {
-            float leftWeight = maxWeight - currentWeight;
-
-
-            return leftWeight;
-        }
-        public float leftVolume()
-        {
-            float leftVolume = maxVolume - currentVolume;
-
-
-            return leftVolume;
+            Console.WriteLine("There is no space left in the bag.");
+            return false;
         }
 
-        public bool leftCount()
+        if (item.Weight > LeftWeight() && item.Volume > LeftVolume())
         {
-            float leftCount = maxItemsInBag - itemsInBag.Count;
-
-            if (leftCount != 0)
-            {
-                return true;
-            }
-            else
-                return false;
-
-
+            Console.WriteLine("Neither the weight nor the volume fits.");
+            return false;
+        }
+        else if (item.Weight > LeftWeight())
+        {
+            Console.WriteLine("Weight limit exceeded, cannot add item.");
+            return false;
+        }
+        else if (item.Volume > LeftVolume())
+        {
+            Console.WriteLine("Volume limit exceeded, cannot add item.");
+            return false;
         }
 
+        itemsInBag.Add(item);
+        CurrentWeight += item.Weight;
+        CurrentVolume += item.Volume;
 
-        public void addToBag(Tavara item)
+        Console.WriteLine($"{item.Name} added to the bag.");
+        return true;
+    }
+
+    public bool PoistaTavara(Tavara item)
+    {
+        if (itemsInBag.Remove(item))
         {
-            bool weightFit = leftWeight() > item.Weight;
-            bool volumeFit = leftVolume() > item.Volume;
-
-            if (leftCount())
-            {
-                if (weightFit && volumeFit)
-                {
-                    currentWeight = currentWeight + item.Weight;
-                    currentVolume = currentVolume + item.Volume;
-                    itemsInBag.Add(item);
-                    Console.WriteLine(item.Name + " added");
-                    Console.WriteLine(" ");
-
-                }
-                else if (weightFit && !volumeFit)
-                {
-                    Console.WriteLine("Only the weight fits; there is not enough volume.");
-                }
-                else if (!weightFit && volumeFit)
-                {
-                    Console.WriteLine("Only the volume fits; the weight limit is exceeded.");
-                }
-                else
-                {
-                    Console.WriteLine("Neither the weight nor the volume fits.");
-                }
-            }
-            else
-                Console.WriteLine("There is no space left."); Console.WriteLine(" ");
-
-
-
-
-
-
+            CurrentWeight -= item.Weight;
+            CurrentVolume -= item.Volume;
+            return true;
         }
+        return false;
     }
 }
