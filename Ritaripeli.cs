@@ -20,8 +20,12 @@ namespace ritaripeli
             hirviot.Add(new Hamahakki());
 
 
-            kaupat = new List<IKauppa>();
-			// TODO luo erilaiset kaupat
+            kaupat = new List<IKauppa>
+			{
+			    new Ravintola(),
+			    new AseKauppa(),
+			    new NuoliKauppa()
+			};
 		}
 
 		public void PeliSilmukka()
